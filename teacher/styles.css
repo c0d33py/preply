@@ -1,0 +1,104 @@
+/* General body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFFFF; /* Light gray background */
+    color: #333; /* Dark text color for readability */
+    margin: 0;
+    padding: 0;
+}
+
+/* Header Section */
+header {
+    background-color: #6C3D66; /* Dark Purple background for header */
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 36px;
+}
+/* Make the primary button smaller */
+.btn-primary {
+    background-color: #9B59B6 !important; /* Purple button */
+    border-color: #9B59B6 !important; /* Purple border */
+    color: white !important; /* White text */
+    font-size: 14px; /* Smaller text */
+    padding: 8px 16px; /* Smaller padding (top/bottom, left/right) */
+    border-radius: 4px; /* Slightly rounder corners */
+    width: 50px; /* Set a fixed width for the button */
+    margin: 0 auto; /* Center the button */
+}
+
+/* Hover effect for the primary button */
+.btn-primary:hover {
+    background-color: #8E44AD !important; /* Darker purple on hover */
+    border-color: #8E44AD !important; /* Darker purple border on hover */
+}
+
+/* Optional: Make the secondary button smaller too */
+.btn-secondary {
+    background-color: #C084B1 !important; /* Soft purple for secondary buttons */
+    border-color: #C084B1 !important;
+    color: white !important;
+    font-size: 14px; /* Smaller text */
+    padding: 8px 16px; /* Smaller padding */
+    border-radius: 4px; /* Optional: slightly rounder corners */
+    width: 50px; /* Set a fixed width for the button */
+    margin: 0 auto; /* Center the button */
+}
+
+/* Hover effect for the secondary button */
+.btn-secondary:hover {
+    background-color: #B26D97 !important; /* Darker secondary purple on hover */
+    border-color: #B26D97 !important;
+}
+
+
+
+/* Links */
+a {
+    color: #4d3346; /* Soft Purple for links */
+    text-decoration: none;
+}
+
+a:hover {
+    color: #9B59B6; /* Accent purple when hovered */
+}
+
+/* Card or Section Background */
+.card {
+    background-color: #D8A7CA; /* Light Lilac background for card sections */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Override the default Bootstrap card header color */
+.card-header {
+    background-color: #6C3D66 !important; /* Lilac/Purple background */
+    color: white !important; /* White text color */
+}
+
+
+/* Form Inputs */
+input, select, textarea {
+    background-color: #F9F9F9;
+    border: 1px solid #D8A7CA; /* Light Lilac border */
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* Footer Section */
+footer {
+    background-color: #6C3D66; /* Dark Purple footer */
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+footer p {
+    font-size: 16px;
+}
