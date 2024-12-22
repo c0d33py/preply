@@ -28,20 +28,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lesson'])) {
     $student_id = $_POST['student_id'];
     $lesson_date = $_POST['lesson_date'];
     $start_time = $_POST['start_time'];
-    $end_time = $_POST['end_time'];
+    // $end_time = $_POST['end_time'];
     $price = $_POST['price'];
     $duration = $_POST['duration'];
     $lesson_status = $_POST['lesson_status'];
 
     // Validate input fields
-    if (empty($student_id) || empty($lesson_date) || empty($start_time) || empty($end_time) || empty($price) || empty($duration)) {
+    if (empty($student_id) || empty($lesson_date) || empty($start_time) || empty($price) || empty($duration)) {
         $error = "All fields are required!";
     } else {
         // Prepare and bind the SQL statement
         $stmt = $conn->prepare("INSERT INTO lessons (student_id, teacher_id, lesson_date, start_time, end_time, price, duration, lesson_status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
 
         if ($stmt) {
-            $stmt->bind_param("iisssdis", $student_id, $user_id, $lesson_date, $start_time, $end_time, $price, $duration, $lesson_status);
+            $stmt->bind_param("iisssdis", $student_id, $user_id, $lesson_date, $start_time, $start_time, $price, $duration, $lesson_status);
 
             if ($stmt->execute()) {
                 $success = "Lesson added successfully!";
@@ -89,10 +89,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lesson'])) {
                             <input type="time" name="start_time" id="start_time" class="form-control" required
                                 placeholder="Start Time">
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <input type="time" name="end_time" id="end_time" class="form-control" required
                                 placeholder="End Time">
-                        </div>
+                        </div> -->
                         <div class="col-md-6">
                             <input type="number" name="price" id="price" class="form-control" step="0.01" required
                                 placeholder="Price">

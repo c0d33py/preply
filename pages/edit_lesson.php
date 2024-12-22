@@ -52,14 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_lesson'])) {
     $lesson_status = $_POST['lesson_status'];
 
     // Validate input fields
-    if (empty($student_id) || empty($lesson_date) || empty($start_time) || empty($end_time) || empty($price) || empty($duration)) {
+    if (empty($student_id) || empty($lesson_date) || empty($start_time) || empty($price) || empty($duration)) {
         $error = "All fields are required!";
     } else {
         // Prepare and bind the SQL statement for updating the lesson
         $stmt = $conn->prepare("UPDATE lessons SET student_id = ?, lesson_date = ?, start_time = ?, end_time = ?, price = ?, duration = ?, lesson_status = ? WHERE id = ? AND teacher_id = ?");
 
         if ($stmt) {
-            $stmt->bind_param("isssdisii", $student_id, $lesson_date, $start_time, $end_time, $price, $duration, $lesson_status, $lesson_id, $user_id);
+            $stmt->bind_param("isssdisii", $student_id, $lesson_date, $start_time, $start_time, $price, $duration, $lesson_status, $lesson_id, $user_id);
 
             if ($stmt->execute()) {
                 $success = "Lesson updated successfully!";
@@ -106,10 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_lesson'])) {
                         <div class="col-md-6">
                             <input type="time" name="start_time" id="start_time" class="form-control" required
                                 value="<?= $lesson['start_time']; ?>" placeholder="Start Time">
-                        </div>
-                        <div class="col-md-6">
-                            <input type="time" name="end_time" id="end_time" class="form-control" required
-                                value="<?= $lesson['end_time']; ?>" placeholder="End Time">
                         </div>
                         <div class="col-md-6">
                             <input type="number" name="price" id="price" class="form-control" step="0.01" required
