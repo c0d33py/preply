@@ -38,17 +38,16 @@ $result = $stmt->get_result();
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="card shadow">
                 <div class="card-header text-center bg-dark text-white">
                     <h3>Teacher Dashboard</h3>
                 </div>
                 <div class="card-body">
-                    <h5 class="mb-4">Lessons for Teacher ID: <?php echo htmlspecialchars($teacher_id); ?></h5>
+                    <h5 class="mb-4">Lessons</h5>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>#</th>
                                 <th>Lesson ID</th>
                                 <th>Student ID</th>
                                 <th>Teacher ID</th>
@@ -67,7 +66,6 @@ $result = $stmt->get_result();
                                 <?php $counter = 1; ?>
                                 <?php while ($row = $result->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?php echo $counter++; ?></td>
                                         <td><?php echo htmlspecialchars($row['id']); ?></td>
                                         <td><?php echo htmlspecialchars($row['student_id']); ?></td>
                                         <td><?php echo htmlspecialchars($row['teacher_id']); ?></td>
