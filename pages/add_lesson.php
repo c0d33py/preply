@@ -1,5 +1,5 @@
 <?php
-include("../header.php");
+include "../header.php";
 include '../connections.php';
 
 // Ensure the user is logged in
@@ -10,13 +10,13 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // Logged-in user ID
 
-// // Fetch the teacher ID from the teachers table
+// // // Fetch the teacher ID from the teachers table
 $teacher_query = $conn->query("SELECT teacher_id FROM teachers WHERE user_id = $user_id");
 $teacher = $teacher_query->fetch_assoc();
 
 if (!$teacher) {
     $error = "Only teachers can add lessons.";
-    header("Location: student_dashboard.php"); // Redirect to a safe page
+    header("Location: update_profile.php"); // Redirect to a safe page
     exit();
 }
 

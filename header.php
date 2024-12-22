@@ -28,7 +28,10 @@
                 <a class="nav-link" href="../pages/add_lesson.php">Add New Lesson</a>
                 <a class="nav-link" href="../pages/teacher_dashboard.php">Dashboard</a>
                 <a class="nav-link" href="../pages/update_profile.php">Profile</a>
-                <a class="btn btn-log-in" href="../pages/logout.php">Log Out</a>
+                <a class="btn btn-log-in" href="../pages/logout.php">Log Out
+                    <hr>
+                    <?php echo $_SESSION['user_role']; ?>
+                </a>
             <?php else: ?>
                 <!-- Guest navigation -->
                 <a class="nav-link" href="student/find_tutors.php">Find tutors</a>
