@@ -1,6 +1,6 @@
 <?php include("../header.php");
 
-include '../db_config.php';
+include '../connections.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signup'])) {
     // Get form inputs

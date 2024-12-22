@@ -1,6 +1,6 @@
 <?php
 include '../header.php';
-include '../db_config.php';
+include '../connections.php';
 
 // Check if the teacher is logged in
 if (!isset($_SESSION['user_id'])) {

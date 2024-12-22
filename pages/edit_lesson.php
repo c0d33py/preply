@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../db_config.php';
+include '../connections.php';
 
 // Check if the user is logged in and is a teacher
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'teacher') {

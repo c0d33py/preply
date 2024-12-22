@@ -1,5 +1,5 @@
 <?php
-include '../db_config.php';
+include '../connections.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
