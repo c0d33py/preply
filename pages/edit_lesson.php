@@ -1,5 +1,5 @@
 <?php
-include("../header.php");
+include "../header.php";
 include '../connections.php';
 
 // Ensure the user is logged in
@@ -10,53 +10,38 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // Logged-in user ID
 
-// Fetch the teacher ID from the teachers table
-$teacher_query = $conn->query("SELECT teacher_id FROM teachers WHERE user_id = $user_id");
-$teacher = $teacher_query->fetch_assoc();
+// Get the lesson id from the URL
+if (isset($_GET['lesson_id'])) {
+    $lesson_id = $_GET['lesson_id'];
 
-if (!$teacher) {
-    $error = "Only teachers can edit lessons.";
-    header("Location: student_dashboard.php"); // Redirect to a safe page
-    exit();
-}
+    // Fetch the lesson details to populate the form
+    $lesson_query = $conn->prepare("SELECT * FROM lessons WHERE id = ? AND (teacher_id = ? OR student_id = ?)");
+    $lesson_query->bind_param("iii", $lesson_id, $user_id, $user_id);
+    $lesson_query->execute();
+    $lesson_result = $lesson_query->get_result();
 
-$teacher_id = $teacher['teacher_id']; // Use the teacher ID
-
-// Fetch the lesson ID from the URL
-if (!isset($_GET['lesson_id']) || empty($_GET['lesson_id'])) {
-    $error = "Lesson ID is missing.";
-    header("Location: teacher_dashboard.php"); // Redirect to the teacher dashboard if no lesson ID is provided
-    exit();
-}
-
-$lesson_id = $_GET['lesson_id'];
-
-// Fetch the lesson data
-$lesson_query = $conn->query("
-    SELECT * FROM lessons WHERE id = $lesson_id AND teacher_id = $teacher_id
-");
-
-$lesson = $lesson_query->fetch_assoc();
-
-if (!$lesson) {
-    $error = "Lesson not found or you don't have permission to edit it.";
-    header("Location: teacher_dashboard.php"); // Redirect to the teacher dashboard
-    exit();
+    if ($lesson_result->num_rows > 0) {
+        $lesson = $lesson_result->fetch_assoc();
+    } else {
+        die("Lesson not found or you don't have permission to edit this lesson.");
+    }
+} else {
+    die("Lesson ID is required.");
 }
 
 // Fetch students for the dropdown
 $students_query = $conn->query("
-    SELECT s.student_id, CONCAT(u.first_name, ' ', u.last_name) AS name
+    SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) AS name
     FROM students s
     INNER JOIN users u ON s.user_id = u.id
-    WHERE u.role = 'student'
+    WHERE u.role = 'student';
 ");
 
 if (!$students_query) {
     die("Error fetching students: " . $conn->error);
 }
 
-// Handle form submission
+// Handle form submission to update the lesson
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_lesson'])) {
     $student_id = $_POST['student_id'];
     $lesson_date = $_POST['lesson_date'];
@@ -70,19 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_lesson'])) {
     if (empty($student_id) || empty($lesson_date) || empty($start_time) || empty($end_time) || empty($price) || empty($duration)) {
         $error = "All fields are required!";
     } else {
-        $stmt = $conn->prepare("
-            UPDATE lessons 
-            SET student_id = ?, lesson_date = ?, start_time = ?, end_time = ?, price = ?, duration = ?, lesson_status = ?
-            WHERE id = ?
-        ");
+        // Prepare and bind the SQL statement for updating the lesson
+        $stmt = $conn->prepare("UPDATE lessons SET student_id = ?, lesson_date = ?, start_time = ?, end_time = ?, price = ?, duration = ?, lesson_status = ? WHERE id = ? AND teacher_id = ?");
 
         if ($stmt) {
-            $stmt->bind_param("isssdiss", $student_id, $lesson_date, $start_time, $end_time, $price, $duration, $lesson_status, $lesson_id);
+            $stmt->bind_param("isssdisii", $student_id, $lesson_date, $start_time, $end_time, $price, $duration, $lesson_status, $lesson_id, $user_id);
 
             if ($stmt->execute()) {
                 $success = "Lesson updated successfully!";
-                header("Location: teacher_dashboard.php"); // Redirect after successful update
-                exit();
             } else {
                 $error = "Error updating lesson: " . $stmt->error;
             }
@@ -113,8 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_lesson'])) {
                             <select name="student_id" id="student_id" class="form-select" required>
                                 <option value="">Select Student</option>
                                 <?php while ($student = $students_query->fetch_assoc()): ?>
-                                    <option value="<?= $student['student_id']; ?>"
-                                        <?= $student['student_id'] == $lesson['student_id'] ? 'selected' : ''; ?>>
+                                    <option value="<?= $student['id']; ?>" <?= ($student['id'] == $lesson['student_id']) ? 'selected' : ''; ?>>
                                         <?= htmlspecialchars($student['name']); ?>
                                     </option>
                                 <?php endwhile; ?>
@@ -122,35 +101,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['edit_lesson'])) {
                         </div>
                         <div class="col-md-6">
                             <input type="date" name="lesson_date" id="lesson_date" class="form-control" required
-                                value="<?= htmlspecialchars($lesson['lesson_date']); ?>" placeholder="Lesson Date">
+                                value="<?= $lesson['lesson_date']; ?>" placeholder="Lesson Date">
                         </div>
                         <div class="col-md-6">
                             <input type="time" name="start_time" id="start_time" class="form-control" required
-                                value="<?= htmlspecialchars($lesson['start_time']); ?>" placeholder="Start Time">
+                                value="<?= $lesson['start_time']; ?>" placeholder="Start Time">
                         </div>
                         <div class="col-md-6">
                             <input type="time" name="end_time" id="end_time" class="form-control" required
-                                value="<?= htmlspecialchars($lesson['end_time']); ?>" placeholder="End Time">
+                                value="<?= $lesson['end_time']; ?>" placeholder="End Time">
                         </div>
                         <div class="col-md-6">
                             <input type="number" name="price" id="price" class="form-control" step="0.01" required
-                                value="<?= htmlspecialchars($lesson['price']); ?>" placeholder="Price">
+                                value="<?= $lesson['price']; ?>" placeholder="Price">
                         </div>
                         <div class="col-md-6">
                             <input type="number" name="duration" id="duration" class="form-control" required
-                                value="<?= htmlspecialchars($lesson['duration']); ?>"
-                                placeholder="Duration (in minutes)">
+                                value="<?= $lesson['duration']; ?>" placeholder="Duration (in minutes)">
                         </div>
                         <div class="col-md-6">
                             <select name="lesson_status" id="lesson_status" class="form-select" required>
-                                <option value="scheduled" <?= $lesson['lesson_status'] == 'scheduled' ? 'selected' : ''; ?>>Scheduled</option>
-                                <option value="completed" <?= $lesson['lesson_status'] == 'completed' ? 'selected' : ''; ?>>Completed</option>
-                                <option value="cancelled" <?= $lesson['lesson_status'] == 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                <option value="scheduled" <?= ($lesson['lesson_status'] == 'scheduled') ? 'selected' : ''; ?>>Scheduled</option>
+                                <option value="completed" <?= ($lesson['lesson_status'] == 'completed') ? 'selected' : ''; ?>>Completed</option>
+                                <option value="cancelled" <?= ($lesson['lesson_status'] == 'cancelled') ? 'selected' : ''; ?>>Cancelled</option>
                             </select>
                         </div>
                         <div class="text-center">
                             <button type="submit" name="edit_lesson" class="btn btn-primary">Update Lesson</button>
-                            <a href="teacher_dashboard.php" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>

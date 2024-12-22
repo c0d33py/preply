@@ -10,30 +10,18 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // Logged-in user ID
 
-// // // Fetch the teacher ID from the teachers table
-$teacher_query = $conn->query("SELECT teacher_id FROM teachers WHERE user_id = $user_id");
-$teacher = $teacher_query->fetch_assoc();
-
-if (!$teacher) {
-    $error = "Only teachers can add lessons.";
-    header("Location: update_profile.php"); // Redirect to a safe page
-    exit();
-}
-
-$teacher_id = $teacher['teacher_id']; // Use the teacher ID
-
+$user_name = $_SESSION[''];
 // Fetch students for the dropdown
 $students_query = $conn->query("
-    SELECT s.student_id, CONCAT(u.first_name, ' ', u.last_name) AS name
+    SELECT u.id, CONCAT(u.first_name, ' ', u.last_name) AS name
     FROM students s
     INNER JOIN users u ON s.user_id = u.id
-    WHERE u.role = 'student'
+    WHERE u.role = 'student';
 ");
 
 if (!$students_query) {
     die("Error fetching students: " . $conn->error);
 }
-
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lesson'])) {
@@ -49,10 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lesson'])) {
     if (empty($student_id) || empty($lesson_date) || empty($start_time) || empty($end_time) || empty($price) || empty($duration)) {
         $error = "All fields are required!";
     } else {
+        // Prepare and bind the SQL statement
         $stmt = $conn->prepare("INSERT INTO lessons (student_id, teacher_id, lesson_date, start_time, end_time, price, duration, lesson_status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
 
         if ($stmt) {
-            $stmt->bind_param("iisssdis", $student_id, $teacher_id, $lesson_date, $start_time, $end_time, $price, $duration, $lesson_status);
+            $stmt->bind_param("iisssdis", $student_id, $user_id, $lesson_date, $start_time, $end_time, $price, $duration, $lesson_status);
 
             if ($stmt->execute()) {
                 $success = "Lesson added successfully!";
@@ -86,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lesson'])) {
                             <select name="student_id" id="student_id" class="form-select" required>
                                 <option value="">Select Student</option>
                                 <?php while ($student = $students_query->fetch_assoc()): ?>
-                                    <option value="<?= $student['student_id']; ?>">
+                                    <option value="<?= $student['id']; ?>">
                                         <?= htmlspecialchars($student['name']); ?>
                                     </option>
                                 <?php endwhile; ?>
@@ -128,4 +117,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_lesson'])) {
         </div>
     </div>
 </div>
+
 <?php include("../footer.php"); ?>
