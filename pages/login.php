@@ -27,12 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_role'] = $user['role'];
 
-                // Redirect user to dashboard or home page
-                header("Location: teacher_dashboard.php");
+                // Redirect user based on their role
+                if ($user['role'] === 'teacher') {
+                    header("Location: teacher_dashboard.php");
+                } elseif ($user['role'] === 'student') {
+                    header("Location: student_dashboard.php");
+                } else {
+                    // Optional: Redirect to a default or error page for undefined roles
+                    header("Location: error_page.php");
+                }
                 exit;
             } else {
                 $error = 'Invalid password!';
             }
+
         } else {
             $error = 'No user found with this email!';
         }
